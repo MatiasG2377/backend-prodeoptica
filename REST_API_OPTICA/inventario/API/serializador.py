@@ -1,6 +1,9 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from inventario.models import Categoria, Proveedor, Producto, ProductoProveedor, Cliente, Venta, ArticuloVenta, MovimientoInventario, Lote
+from inventario.models import Categoria, Proveedor, Producto, ProductoProveedor, Cliente, Venta, ArticuloVenta, MovimientoInventario, Lote, Sucursal
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
 
 class categoriaSerializer(serializers.ModelSerializer):
     class Meta:
@@ -12,12 +15,22 @@ class proveedorSerializer(serializers.ModelSerializer):
         model = Proveedor
         fields = '__all__'
 
-class productoSerializer(serializers.ModelSerializer):
+# Serializador para el producto
+class ProductoSerializer(serializers.ModelSerializer):
+    # Incluyendo nombre de la categoría y sucursal en la representación
+    categoria_nombre = serializers.CharField(source='categoria_producto.nombre_categoria', read_only=True)
+    sucursal_nombre = serializers.CharField(source='sucursal_producto.nombre_sucursal', read_only=True)
+
     class Meta:
         model = Producto
         fields = '__all__'
 
-class productoProveedorSerializer(serializers.ModelSerializer):
+# Serializador para la relación entre productos y proveedores
+class ProductoProveedorSerializer(serializers.ModelSerializer):
+    # Relación anidada para representación
+    producto_nombre = serializers.CharField(source='producto_productoProveedor.nombre_producto', read_only=True)
+    proveedor_nombre = serializers.CharField(source='proveedor_productoProveedor.nombre_proveedor', read_only=True)
+
     class Meta:
         model = ProductoProveedor
         fields = '__all__'
@@ -27,43 +40,72 @@ class clienteSerializer(serializers.ModelSerializer):
         model = Cliente
         fields = '__all__'
 
-class ventaSerializer(serializers.ModelSerializer):
+# Serializador para la venta
+class VentaSerializer(serializers.ModelSerializer):
+    cliente_nombre = serializers.CharField(source='cliente_venta.nombre_cliente', read_only=True)
+    sucursal_nombre = serializers.CharField(source='sucursal_venta.nombre_sucursal', read_only=True)
+
     class Meta:
         model = Venta
         fields = '__all__'
 
-class articuloVentaSerializer(serializers.ModelSerializer):
+# Serializador para los artículos vendidos en una venta
+class ArticuloVentaSerializer(serializers.ModelSerializer):
+    producto_nombre = serializers.CharField(source='producto_articuloVenta.nombre_producto', read_only=True)
+    venta_fecha = serializers.DateTimeField(source='venta_articuloVenta.fecha_venta', read_only=True)
+
     class Meta:
         model = ArticuloVenta
         fields = '__all__'
 
-class movimientoInventarioSerializer(serializers.ModelSerializer):
+# Serializador para movimientos de inventario
+class MovimientoInventarioSerializer(serializers.ModelSerializer):
+    producto_nombre = serializers.CharField(source='producto_movimientoInventario.nombre_producto', read_only=True)
+    sucursal_nombre = serializers.CharField(source='sucursal_movimientoInventario.nombre_sucursal', read_only=True)
+
     class Meta:
         model = MovimientoInventario
         fields = '__all__'
 
-class loteSerializer(serializers.ModelSerializer):
+# Serializador para lotes de productos
+class LoteSerializer(serializers.ModelSerializer):
+    producto_nombre = serializers.CharField(source='producto_lote.nombre_producto', read_only=True)
+
     class Meta:
         model = Lote
         fields = '__all__'
 
 
+
+# Serializador para la sucursal
+class SucursalSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Sucursal
+        fields = '__all__'
+
 #! Manejo del login
+
+from rest_framework import serializers
+from inventario.models import User, Sucursal
+
 class UserSerializer(serializers.ModelSerializer):
+    # Campo de solo lectura para mostrar el nombre de la sucursal
+    sucursal_nombre = serializers.CharField(source='sucursal_usuario.nombre_sucursal', read_only=True)
+
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'password']
-        extra_kwargs = {
-            'password': {'write_only': True}  # Para que la contraseña no sea incluida en las respuestas
-        }
+        fields = ['id', 'username', 'email', 'password', 'rol', 'sucursal_usuario', 'sucursal_nombre']
+        extra_kwargs = {'password': {'write_only': True}}  # La contraseña solo se envía, no se devuelve en la respuesta
 
     def create(self, validated_data):
-        user = User.objects.create(
+        # Crear un usuario con contraseña encriptada
+        user = User.objects.create_user(
             username=validated_data['username'],
-            email=validated_data.get('email', '')
+            email=validated_data['email'],
+            password=validated_data['password'],
+            rol=validated_data.get('rol', 'Usuario'),  # Valor predeterminado para el rol
+            sucursal_usuario=validated_data.get('sucursal_usuario')  # Asignar la sucursal
         )
-        user.set_password(validated_data['password'])  # Hashea la contraseña
-        user.save()
         return user
 
     def update(self, instance, validated_data):

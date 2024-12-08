@@ -1,7 +1,15 @@
 from django.db import models
 from django.core.exceptions import ValidationError
+from django.contrib.auth.models import AbstractUser
 
 # Create your models here.
+
+# Opciones de roles para los usuarios
+ROL_USUARIO_CHOICES = [
+    ('Administrador', 'Administrador de sistemas'),
+    ('Gerente', 'Gerente'),
+    ('Usuario', 'Usuario normal'),
+]
 
 #! Opciones para los estados de los productos
 ESTADO_PRODUCTO_CHOICES = [
@@ -17,7 +25,46 @@ ESTADO_VENTA_CHOICES = [
     ('F', 'Finalizado'),
 ]
 
+
 #! Los ID de cada tabla se generan de manera automática en la BD
+
+# Tabla de sucursales
+class Sucursal(models.Model):
+    nombre_sucursal = models.TextField(null=False)  # Nombre de la sucursal
+    direccion_sucursal = models.TextField(blank=True, null=True)  # Dirección de la sucursal
+    telefono_sucursal = models.TextField(blank=True, null=True)  # Teléfono de la sucursal
+    gerente_sucursal = models.TextField(blank=True, null=True)  # Nombre del gerente encargado
+    fecha_creacion_sucursal = models.DateTimeField(auto_now_add=True)  # Fecha de creación
+
+    def __str__(self):
+        return self.nombre_sucursal
+
+class User(AbstractUser):
+    rol = models.CharField(max_length=20, choices=[
+        ('Administrador', 'Administrador de sistemas'),
+        ('Gerente', 'Gerente'),
+        ('Usuario', 'Usuario normal'),
+    ], default='Usuario')
+    sucursal_usuario = models.ForeignKey('Sucursal', on_delete=models.SET_NULL, null=True, blank=True)
+
+    # Agrega related_name personalizado para evitar conflictos
+    groups = models.ManyToManyField(
+        'auth.Group',
+        related_name='custom_user_set',  # Cambia el related_name para evitar conflicto
+        blank=True,
+        help_text='The groups this user belongs to. A user will get all permissions granted to each of their groups.',
+        verbose_name='groups',
+    )
+    user_permissions = models.ManyToManyField(
+        'auth.Permission',
+        related_name='custom_user_permissions_set',  # Cambia el related_name para evitar conflicto
+        blank=True,
+        help_text='Specific permissions for this user.',
+        verbose_name='user permissions',
+    )
+
+    def __str__(self):
+        return f"{self.username} - {self.rol}"
 # Categoría de productos
 class Categoria(models.Model):
     nombre_categoria = models.TextField(null=False) # Nombre de la categoría
@@ -43,31 +90,32 @@ class Proveedor(models.Model):
         return self.nombre_proveedor
 
 
-# Productos
 class Producto(models.Model):
-    nombre_producto = models.TextField(null=False) # NOmbre del producto
-    categoria_producto = models.ForeignKey(Categoria, on_delete=models.SET_NULL, null=True, blank=True) # ForeignKey de categoria 
-    pvp_producto = models.DecimalField(max_digits=10, decimal_places=2, null=False) # Precio del producto
-    costo_producto = models.DecimalField(max_digits=10, decimal_places=2) # Costo del la adquisición del producto
-    cantidad_producto = models.IntegerField(null=False) # cantidad disponible
-    minimo_producto = models.IntegerField(default=0) # Stock mínimo
-    maximo_producto = models.IntegerField(default=100) # Stock máximo
-    fecha_ingreso_producto = models.DateTimeField(auto_now_add=True) # Fecha de ingreso del producto
-    estado_producto = models.CharField(max_length=20, choices=ESTADO_PRODUCTO_CHOICES, default='Disponible') # Estado del producto en el inventario
-    descripcion_producto = models.TextField(blank=True, null=True) # Descripción del producto
-    marca_producto = models.TextField(blank=True, null=True) # Marca del producto
-    proveedores_producto = models.ManyToManyField(Proveedor, through='ProductoProveedor') # Define relación muchos a muchos entre proveedor y producto a través de la tabla "ProductoProveedor"
-    ultima_venta_producto = models.DateTimeField(blank=True, null=True) #Ultima venta del producto
-
-def clean(self):
-    if self.minimo_producto > self.maximo_producto:
-        raise ValidationError("El stock mínimo no puede ser mayor que el stock máximo.")
-    if self.cantidad_producto < 0:
-        raise ValidationError("La cantidad en stock no puede ser negativa.")
+    nombre_producto = models.TextField(null=False)  # Nombre del producto
+    categoria_producto = models.ForeignKey(Categoria, on_delete=models.SET_NULL, null=True, blank=True)  # Categoría
+    sucursal_producto = models.ForeignKey(
+        Sucursal, 
+        on_delete=models.CASCADE,
+        default=1  # ID de la sucursal predeterminada
+    )  # Sucursal asociada
+    pvp_producto = models.DecimalField(max_digits=10, decimal_places=2, null=False)  # Precio de venta
+    costo_producto = models.DecimalField(max_digits=10, decimal_places=2)  # Costo
+    cantidad_producto = models.IntegerField(null=False)  # Cantidad disponible
+    minimo_producto = models.IntegerField(default=0)  # Stock mínimo
+    maximo_producto = models.IntegerField(default=100)  # Stock máximo
+    estado_producto = models.CharField(max_length=20, choices=ESTADO_PRODUCTO_CHOICES, default='Disponible')  # Estado
+    descripcion_producto = models.TextField(blank=True, null=True)  # Descripción
+    marca_producto = models.TextField(blank=True, null=True)  # Marca
+    ultima_venta_producto = models.DateTimeField(blank=True, null=True)  # Última venta
+        
+    def clean(self):
+        if self.minimo_producto > self.maximo_producto:
+            raise ValidationError("El stock mínimo no puede ser mayor que el stock máximo.")
+        if self.cantidad_producto < 0:
+            raise ValidationError("La cantidad en stock no puede ser negativa.")
 
     def __str__(self):
         return f"{self.nombre_producto}"
-
 
 # Relación entre Productos y Proveedores
 class ProductoProveedor(models.Model):
@@ -95,11 +143,15 @@ class Cliente(models.Model):
 
 # Ventas
 class Venta(models.Model):
-    cliente_venta = models.ForeignKey(Cliente, on_delete=models.SET_NULL, null=True, blank=True) # ForeignKey del cliente
-    fecha_venta = models.DateTimeField(auto_now_add=True) # Fecha de la venta
-    total_venta = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True) # Total de la venta
-    estado_venta = models.CharField(max_length=1, choices=ESTADO_VENTA_CHOICES, default='P') # Estado de venta
-    metodo_venta = models.CharField(max_length=255, blank=True, null=True)  # Efectivo, tarjeta, etc.
+    cliente_venta = models.ForeignKey(Cliente, on_delete=models.SET_NULL, null=True, blank=True)  # Cliente
+    sucursal_venta = models.ForeignKey(
+        Sucursal, 
+        on_delete=models.CASCADE, 
+        default=1  # Cambia '1' por el ID de una sucursal válida en tu base de datos
+    )  # Sucursal
+    fecha_venta = models.DateTimeField(auto_now_add=True)  # Fecha
+    total_venta = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)  # Total
+    estado_venta = models.CharField(max_length=1, choices=ESTADO_VENTA_CHOICES, default='P')  # Estado
 
     def __str__(self):
         return f"Venta #{self.id} - {self.fecha_venta}"
@@ -117,12 +169,19 @@ class ArticuloVenta(models.Model):
         return f"Artículo {self.producto_articuloVenta.nombre_producto} en Venta #{self.venta_articuloVenta.id}"
 
 
-# Movimientos de inventario (entradas/salidas)
 class MovimientoInventario(models.Model):
-    producto_movimientoInventario = models.ForeignKey(Producto, on_delete=models.CASCADE) # ForeignKey del producto
-    tipo_movimientoInventario = models.CharField(max_length=10, choices=[('Entrada', 'Entrada'), ('Salida', 'Salida')]) # Tipo de movimiento en el inventario
-    cantidad_movimientoInventario = models.IntegerField(null=False) # Cantidad de productos movidos
-    fecha_movimientoInventario = models.DateTimeField(auto_now_add=True) # Fecha del movimiento del inventario
+    producto_movimientoInventario = models.ForeignKey(Producto, on_delete=models.CASCADE)  # ForeignKey del producto
+    sucursal_movimientoInventario = models.ForeignKey(
+        Sucursal,
+        on_delete=models.CASCADE,
+        default=1  # ID de la sucursal predeterminada
+    )
+    tipo_movimientoInventario = models.CharField(
+        max_length=10,
+        choices=[('Entrada', 'Entrada'), ('Salida', 'Salida')]
+    )  # Tipo de movimiento en el inventario
+    cantidad_movimientoInventario = models.IntegerField(null=False)  # Cantidad de productos movidos
+    fecha_movimientoInventario = models.DateTimeField(auto_now_add=True)  # Fecha del movimiento del inventario
     motivo_movimientoInventario = models.TextField(blank=True, null=True)  # Ej: Venta, ajuste, devolución
 
     def __str__(self):

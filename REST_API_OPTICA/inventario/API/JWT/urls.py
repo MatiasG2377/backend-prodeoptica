@@ -10,5 +10,5 @@ urlpatterns = [
     # Logout - invalidar token
     path('logout/', LogoutView.as_view(), name='logout'),
     # Registro
-    path('register/',RegisterView.as_view(), name= 'register')
+    path('register/',RegisterView.as_view(), name= 'register'),
 ]
