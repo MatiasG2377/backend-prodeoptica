@@ -1,6 +1,6 @@
 from rest_framework import viewsets
 from inventario.models import Categoria, Proveedor, Producto, ProductoProveedor, Cliente, Venta, ArticuloVenta, MovimientoInventario, Lote, User, Sucursal
-from inventario.API.serializador import categoriaSerializer, ProductoSerializer, proveedorSerializer, ProductoProveedorSerializer, clienteSerializer, VentaSerializer, ArticuloVentaSerializer, MovimientoInventarioSerializer, LoteSerializer, UserSerializer, UserSerializer, SucursalSerializer
+from inventario.API.serializers import categoriaSerializer, ProductoSerializer, proveedorSerializer, ProductoProveedorSerializer, clienteSerializer, VentaSerializer, ArticuloVentaSerializer, MovimientoInventarioSerializer, LoteSerializer, UserSerializer, SucursalSerializer
 from django.contrib.auth.models import User
 
 from rest_framework.views import APIView
@@ -95,7 +95,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.db.models import Q  # Importa Q para consultas avanzadas
 from inventario.models import Producto
-from inventario.API.serializador import ProductoSerializer
+from inventario.API.serializers import ProductoSerializer
 
 class BuscarProductoView(APIView):
     """

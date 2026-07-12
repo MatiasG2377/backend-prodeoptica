@@ -1,5 +1,5 @@
 from rest_framework.routers import DefaultRouter
-from inventario.API.vistas import categoriaViewSet, productoViewSet, proveedorViewSet, productoProveedorViewSet, clienteViewSet, ventaViewSet, articuloVentaViewSet, movimientoInventarioViewSet, loteViewSet, UserViewSet, SucursalViewSet
+from inventario.API.views import categoriaViewSet, productoViewSet, proveedorViewSet, productoProveedorViewSet, clienteViewSet, ventaViewSet, articuloVentaViewSet, movimientoInventarioViewSet, loteViewSet, UserViewSet, SucursalViewSet
 
 router = DefaultRouter()
 router.register('categorias', categoriaViewSet, basename='categoria')
