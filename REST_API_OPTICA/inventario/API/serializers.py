@@ -1,7 +1,6 @@
 from rest_framework import serializers
-from django.contrib.auth.models import User
-from inventario.models import Categoria, Proveedor, Producto, ProductoProveedor, Cliente, Venta, ArticuloVenta, MovimientoInventario, Lote, Sucursal
 from django.contrib.auth import get_user_model
+from inventario.models import Categoria, Proveedor, Producto, ProductoProveedor, Cliente, Venta, ArticuloVenta, MovimientoInventario, Lote, Sucursal
 
 User = get_user_model()
 
@@ -84,9 +83,6 @@ class SucursalSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 #! Manejo del login
-
-from rest_framework import serializers
-from inventario.models import User, Sucursal
 
 class UserSerializer(serializers.ModelSerializer):
     # Campo de solo lectura para mostrar el nombre de la sucursal
