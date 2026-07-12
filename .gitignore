@@ -1,0 +1,21 @@
+# Entornos virtuales
+venv/
+.venv/
+env/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# Django
+*.sqlite3
+/staticfiles/
+/media/
+
+# Secrets
+.env
+
+# IDE
+.idea/
+.vscode/
