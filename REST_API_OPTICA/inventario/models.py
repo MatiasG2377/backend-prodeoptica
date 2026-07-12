@@ -40,11 +40,7 @@ class Sucursal(models.Model):
         return self.nombre_sucursal
 
 class User(AbstractUser):
-    rol = models.CharField(max_length=20, choices=[
-        ('Administrador', 'Administrador de sistemas'),
-        ('Gerente', 'Gerente'),
-        ('Usuario', 'Usuario normal'),
-    ], default='Usuario')
+    rol = models.CharField(max_length=20, choices=ROL_USUARIO_CHOICES, default='Usuario')
     sucursal_usuario = models.ForeignKey('Sucursal', on_delete=models.SET_NULL, null=True, blank=True)
 
     # Agrega related_name personalizado para evitar conflictos
