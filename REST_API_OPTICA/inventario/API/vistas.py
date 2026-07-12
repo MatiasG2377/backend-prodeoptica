@@ -74,7 +74,6 @@ class RegisterView(APIView):
 
 class LogoutView(APIView):
     def post(self, request):
-        print("Cuerpo recibido:", request.data)  # Esto imprimirá el cuerpo enviado desde Postman
         # Verificar si el 'refresh_token' está presente en el cuerpo de la solicitud
         refresh_token = request.data.get("refresh_token")
         if not refresh_token:
