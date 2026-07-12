@@ -12,13 +12,15 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 from datetime import timedelta
+import environ
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
+env = environ.Env()
+environ.Env.read_env(str(BASE_DIR / '.env'))
 SECURE_SSL_REDIRECT = False  # Redirige todas las solicitudes HTTP a HTTPS
-SESSION_COOKIE_SECURE = False  # Solo enviar cookies de sesión a través de HTTPS
-CSRF_COOKIE_SECURE = False  # Solo enviar cookies CSRF a través de HTTPS
+SESSION_COOKIE_SECURE = not env.bool('DEBUG', default=False)  # Solo enviar cookies de sesión a través de HTTPS
+CSRF_COOKIE_SECURE = not env.bool('DEBUG', default=False)  # Solo enviar cookies CSRF a través de HTTPS
 
 
 SECURE_HSTS_SECONDS = 0  # 1 año
@@ -26,18 +28,18 @@ SECURE_HSTS_INCLUDE_SUBDOMAINS = False
 SECURE_HSTS_PRELOAD = False
 
 
-CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_ALL_ORIGINS = env.bool('CORS_ALLOW_ALL_ORIGINS', default=False)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-up^qzr@vps#xy#k*hw)no@5w%yaxs-g^$-m&p8b9*n9d0-yy^w'
+SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env.bool('DEBUG', default=False)
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=[])
 
 
 # Application definition
@@ -112,15 +114,16 @@ WSGI_APPLICATION = 'REST_API_OPTICA.wsgi.application'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 DATABASES = {
-    'default': {        
+    'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'inventario',
-        'USER': 'postgres',  # Uso de la conexión
-        'PASSWORD': 'Passw3rd+',  # Contraseña de la conexión
-        'HOST': 'localhost',  # Hostname o IP del servidor PostgreSQL
-        'PORT': 5432  # Porta que tu programa tiene habilitada para la conexión a PostgreSQL.
+        'NAME': env('DB_NAME'),
+        'USER': env('DB_USER'),
+        'PASSWORD': env('DB_PASSWORD'),
+        'HOST': env('DB_HOST', default='localhost'),
+        'PORT': env.int('DB_PORT', default=5432),
     }
 }
+
 
 PASSWORD_HASHERS = [
     'django.contrib.auth.hashers.Argon2PasswordHasher',
