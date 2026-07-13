@@ -15,32 +15,17 @@ from datetime import timedelta
 import environ
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
+
 env = environ.Env()
 environ.Env.read_env(str(BASE_DIR / '.env'))
-SECURE_SSL_REDIRECT = False  # Redirige todas las solicitudes HTTP a HTTPS
-SESSION_COOKIE_SECURE = not env.bool('DEBUG', default=False)  # Solo enviar cookies de sesión a través de HTTPS
-CSRF_COOKIE_SECURE = not env.bool('DEBUG', default=False)  # Solo enviar cookies CSRF a través de HTTPS
-
 
 SECURE_HSTS_SECONDS = 0  # 1 año
 SECURE_HSTS_INCLUDE_SUBDOMAINS = False
 SECURE_HSTS_PRELOAD = False
 
-
-CORS_ALLOW_ALL_ORIGINS = env.bool('CORS_ALLOW_ALL_ORIGINS', default=False)
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
-
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = env('SECRET_KEY')
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env.bool('DEBUG', default=False)
-
-ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=[])
-
 
 # Application definition
 
@@ -63,7 +48,7 @@ SIMPLE_JWT = {
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),  # Duración del token de refresco
     'ROTATE_REFRESH_TOKENS': True,  # Generar un nuevo token de refresco al usarlo
     'BLACKLIST_AFTER_ROTATION': True,  # Invalida los tokens antiguos
-    'AUTH_HEADER_TYPES':('Bearer',),
+    'AUTH_HEADER_TYPES': ('Bearer',),
 }
 
 REST_FRAMEWORK = {
@@ -77,7 +62,6 @@ REST_FRAMEWORK = {
     ],
 }
 
-
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -87,7 +71,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware'
-] 
+]
 
 ROOT_URLCONF = 'REST_API_OPTICA.urls'
 

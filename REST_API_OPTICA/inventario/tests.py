@@ -1,6 +1,11 @@
+from django.contrib.auth import get_user_model
 from django.test import TestCase
+from rest_framework import status
+from rest_framework.test import APIClient
 
 from inventario.models import Producto, Proveedor, ProductoProveedor, Categoria, Sucursal
+
+User = get_user_model()
 
 
 class ProductoProveedorStrTest(TestCase):
@@ -22,3 +27,24 @@ class ProductoProveedorStrTest(TestCase):
             costo_productoProveedor=5,
         )
         self.assertEqual(str(relacion), "Optica SA - Lente X")
+
+
+class UserViewSetPermissionsTest(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+        self.usuario_normal = User.objects.create_user(
+            username="normal", password="testpass123", rol="Usuario"
+        )
+        self.admin = User.objects.create_user(
+            username="admin", password="testpass123", rol="Administrador"
+        )
+
+    def test_usuario_normal_no_puede_listar_usuarios(self):
+        self.client.force_authenticate(user=self.usuario_normal)
+        response = self.client.get("/api/user/")
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_admin_si_puede_listar_usuarios(self):
+        self.client.force_authenticate(user=self.admin)
+        response = self.client.get("/api/user/")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
