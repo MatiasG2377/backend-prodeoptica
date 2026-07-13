@@ -12,33 +12,20 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 from datetime import timedelta
+import environ
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
-SECURE_SSL_REDIRECT = False  # Redirige todas las solicitudes HTTP a HTTPS
-SESSION_COOKIE_SECURE = False  # Solo enviar cookies de sesión a través de HTTPS
-CSRF_COOKIE_SECURE = False  # Solo enviar cookies CSRF a través de HTTPS
-
+env = environ.Env()
+environ.Env.read_env(str(BASE_DIR / '.env'))
 
 SECURE_HSTS_SECONDS = 0  # 1 año
 SECURE_HSTS_INCLUDE_SUBDOMAINS = False
 SECURE_HSTS_PRELOAD = False
 
-
-CORS_ALLOW_ALL_ORIGINS = True
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
-
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-up^qzr@vps#xy#k*hw)no@5w%yaxs-g^$-m&p8b9*n9d0-yy^w'
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = []
-
+SECRET_KEY = env('SECRET_KEY')
 
 # Application definition
 
@@ -61,7 +48,7 @@ SIMPLE_JWT = {
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),  # Duración del token de refresco
     'ROTATE_REFRESH_TOKENS': True,  # Generar un nuevo token de refresco al usarlo
     'BLACKLIST_AFTER_ROTATION': True,  # Invalida los tokens antiguos
-    'AUTH_HEADER_TYPES':('Bearer',),
+    'AUTH_HEADER_TYPES': ('Bearer',),
 }
 
 REST_FRAMEWORK = {
@@ -75,7 +62,6 @@ REST_FRAMEWORK = {
     ],
 }
 
-
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -85,7 +71,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware'
-] 
+]
 
 ROOT_URLCONF = 'REST_API_OPTICA.urls'
 
@@ -112,15 +98,16 @@ WSGI_APPLICATION = 'REST_API_OPTICA.wsgi.application'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 DATABASES = {
-    'default': {        
+    'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'inventario',
-        'USER': 'postgres',  # Uso de la conexión
-        'PASSWORD': 'Passw3rd+',  # Contraseña de la conexión
-        'HOST': 'localhost',  # Hostname o IP del servidor PostgreSQL
-        'PORT': 5432  # Porta que tu programa tiene habilitada para la conexión a PostgreSQL.
+        'NAME': env('DB_NAME'),
+        'USER': env('DB_USER'),
+        'PASSWORD': env('DB_PASSWORD'),
+        'HOST': env('DB_HOST', default='localhost'),
+        'PORT': env.int('DB_PORT', default=5432),
     }
 }
+
 
 PASSWORD_HASHERS = [
     'django.contrib.auth.hashers.Argon2PasswordHasher',
@@ -128,6 +115,7 @@ PASSWORD_HASHERS = [
     'django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher',
     'django.contrib.auth.hashers.BCryptSHA256PasswordHasher',
 ]
+AUTH_USER_MODEL = 'inventario.User'
 
 
 # Password validation
