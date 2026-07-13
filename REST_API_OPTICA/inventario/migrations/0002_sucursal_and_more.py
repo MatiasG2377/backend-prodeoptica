@@ -14,6 +14,10 @@ class Migration(migrations.Migration):
         ('inventario', '0001_initial'),
     ]
 
+    run_before = [
+        ('admin', '0001_initial'),
+    ]
+
     operations = [
         migrations.CreateModel(
             name='Sucursal',

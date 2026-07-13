@@ -72,7 +72,7 @@ class ProductoProveedor(models.Model):
     tiempo_entrega_productoProveedor = models.IntegerField(help_text="Días para entrega", blank=True, null=True)  # Registrar el tiempo en dpias de entrega
 
     def __str__(self):
-        return f"{self.proveedor_productoProveedor.nombre_proveedor} - {self.poroducto_productoProveedor.nombre_producto}"
+        return f"{self.proveedor_productoProveedor.nombre_proveedor} - {self.producto_productoProveedor.nombre_producto}"
 
 
 class MovimientoInventario(models.Model):
