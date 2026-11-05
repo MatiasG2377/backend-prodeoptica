@@ -2,14 +2,19 @@ from rest_framework import viewsets, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
+from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import get_user_model
 
 from inventario.models import Sucursal
-from inventario.API.serializers import UserSerializer, SucursalSerializer
+from inventario.API.serializers import UserSerializer, SucursalSerializer, CustomTokenObtainPairSerializer
 from inventario.API.permissions import IsAdminOrManager
 
 User = get_user_model()
+
+
+class CustomTokenObtainPairView(TokenObtainPairView):
+    serializer_class = CustomTokenObtainPairSerializer
 
 
 class UserViewSet(viewsets.ModelViewSet):

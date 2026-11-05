@@ -1,4 +1,4 @@
-from .usuarios import SucursalSerializer, UserSerializer
+from .usuarios import UserSerializer, SucursalSerializer, CustomTokenObtainPairSerializer
 from .inventario import (
     categoriaSerializer,
     proveedorSerializer,
@@ -7,18 +7,33 @@ from .inventario import (
     MovimientoInventarioSerializer,
     LoteSerializer,
 )
-from .ventas import clienteSerializer, VentaSerializer, ArticuloVentaSerializer
+from .ventas import (
+    LaboratorioSerializer,
+    clienteSerializer,
+    PacienteSerializer,
+    FichaMedicaSerializer,
+    VentaSerializer,
+    ArticuloVentaSerializer,
+    AbonoSerializer,
+    EgresoSerializer,
+)
 
 __all__ = [
-    'SucursalSerializer',
     'UserSerializer',
+    'SucursalSerializer',
+    'CustomTokenObtainPairSerializer',
     'categoriaSerializer',
     'proveedorSerializer',
     'ProductoSerializer',
     'ProductoProveedorSerializer',
     'MovimientoInventarioSerializer',
     'LoteSerializer',
+    'LaboratorioSerializer',
     'clienteSerializer',
+    'PacienteSerializer',
+    'FichaMedicaSerializer',
     'VentaSerializer',
     'ArticuloVentaSerializer',
+    'AbonoSerializer',
+    'EgresoSerializer',
 ]

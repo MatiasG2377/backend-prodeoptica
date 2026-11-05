@@ -1,4 +1,4 @@
-from .usuarios import UserViewSet, SucursalViewSet, RegisterView, LogoutView
+from .usuarios import UserViewSet, SucursalViewSet, RegisterView, LogoutView, CustomTokenObtainPairView
 from .inventario import (
     categoriaViewSet,
     productoViewSet,
@@ -8,13 +8,24 @@ from .inventario import (
     loteViewSet,
     BuscarProductoView,
 )
-from .ventas import clienteViewSet, ventaViewSet, articuloVentaViewSet
+from .ventas import (
+    LaboratorioViewSet,
+    clienteViewSet,
+    PacienteViewSet,
+    FichaMedicaViewSet,
+    ventaViewSet,
+    articuloVentaViewSet,
+    AbonoViewSet,
+    EgresoViewSet,
+    CierreCajaResumenView,
+)
 
 __all__ = [
     'UserViewSet',
     'SucursalViewSet',
     'RegisterView',
     'LogoutView',
+    'CustomTokenObtainPairView',
     'categoriaViewSet',
     'productoViewSet',
     'proveedorViewSet',
@@ -22,7 +33,13 @@ __all__ = [
     'movimientoInventarioViewSet',
     'loteViewSet',
     'BuscarProductoView',
+    'LaboratorioViewSet',
     'clienteViewSet',
+    'PacienteViewSet',
+    'FichaMedicaViewSet',
     'ventaViewSet',
     'articuloVentaViewSet',
+    'AbonoViewSet',
+    'EgresoViewSet',
+    'CierreCajaResumenView',
 ]

@@ -8,7 +8,17 @@ from .inventario import (
     MovimientoInventario,
     Lote,
 )
-from .ventas import ESTADO_VENTA_CHOICES, Cliente, Venta, ArticuloVenta
+from .ventas import (
+    ESTADO_VENTA_CHOICES,
+    Laboratorio,
+    Cliente,
+    Paciente,
+    FichaMedica,
+    Venta,
+    ArticuloVenta,
+    Abono,
+    Egreso,
+)
 
 __all__ = [
     'ROL_USUARIO_CHOICES',
@@ -22,7 +32,12 @@ __all__ = [
     'MovimientoInventario',
     'Lote',
     'ESTADO_VENTA_CHOICES',
+    'Laboratorio',
     'Cliente',
+    'Paciente',
+    'FichaMedica',
     'Venta',
     'ArticuloVenta',
+    'Abono',
+    'Egreso',
 ]

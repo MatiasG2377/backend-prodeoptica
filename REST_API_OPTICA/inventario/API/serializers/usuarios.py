@@ -1,10 +1,30 @@
 from rest_framework import serializers
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from django.contrib.auth import get_user_model
 
 from inventario.models import Sucursal
 from inventario.services import crear_usuario, actualizar_usuario
 
 User = get_user_model()
+
+
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    def validate(self, attrs):
+        data = super().validate(attrs)
+
+        sucursal = getattr(self.user, 'sucursal_usuario', None)
+        sucursal_nombre = sucursal.nombre_sucursal if sucursal else "Matriz"
+
+        data['usuario'] = {
+            'id': self.user.id,
+            'username_usuario': self.user.username,
+            'username': self.user.username,
+            'email': self.user.email,
+            'rol': getattr(self.user, 'rol', 'Administrador'),
+            'sucursal': sucursal_nombre,
+            'sucursal_id': sucursal.id if sucursal else None,
+        }
+        return data
 
 
 # Serializador para la sucursal
