@@ -46,7 +46,7 @@ class Producto(models.Model):
     )  # Sucursal asociada
     pvp_producto = models.DecimalField(max_digits=10, decimal_places=2, null=False)  # Precio de venta
     costo_producto = models.DecimalField(max_digits=10, decimal_places=2)  # Costo
-    cantidad_producto = models.IntegerField(null=False)  # Cantidad disponible
+    cantidad_producto = models.IntegerField(default=0)  # Cantidad disponible, solo obligatoria si se controla stock
     minimo_producto = models.IntegerField(default=0)  # Stock mínimo
     maximo_producto = models.IntegerField(default=100)  # Stock máximo
     estado_producto = models.CharField(max_length=20, choices=ESTADO_PRODUCTO_CHOICES, default='Disponible')  # Estado
