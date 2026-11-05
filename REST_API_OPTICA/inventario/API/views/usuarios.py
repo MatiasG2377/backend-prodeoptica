@@ -51,5 +51,5 @@ class LogoutView(APIView):
             token = RefreshToken(refresh_token)
             token.blacklist()
             return Response({"detail": "Logout successful"}, status=status.HTTP_200_OK)
-        except Exception as e:
-            return Response({"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception:
+            return Response({"detail": "No se pudo cerrar la sesión. Intenta de nuevo."}, status=status.HTTP_400_BAD_REQUEST)
