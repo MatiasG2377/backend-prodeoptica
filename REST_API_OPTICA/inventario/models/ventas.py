@@ -23,7 +23,7 @@ class Laboratorio(models.Model):
 
 # Clientes
 class Cliente(models.Model):
-    ci_cliente = models.TextField(null=False)  # Identificación del cliente
+    ci_cliente = models.TextField(blank=True, null=True)  # Identificación del cliente (opcional)
     nombre_cliente = models.TextField(null=False)  # Nombre del cliente
     apellido_cliente = models.TextField(blank=True, null=True)  # Apellido del cliente
     informacion_cliente = models.TextField(blank=True, null=True)  # Información del cliente
@@ -40,7 +40,7 @@ class Cliente(models.Model):
 # Pacientes
 class Paciente(models.Model):
     cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE, related_name='pacientes', null=True, blank=True)
-    ci_paciente = models.TextField(null=False)
+    ci_paciente = models.TextField(blank=True, null=True)  # Opcional
     nombres_paciente = models.TextField(null=False)
     apellidos_paciente = models.TextField(null=False)
     fecha_nacimiento = models.DateField(blank=True, null=True)

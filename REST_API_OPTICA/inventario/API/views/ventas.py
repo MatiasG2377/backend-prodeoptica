@@ -63,7 +63,7 @@ class clienteViewSet(viewsets.ModelViewSet):
             cliente.save()
         else:
             cliente = Cliente.objects.create(
-                ci_cliente=ci or '9999999999',
+                ci_cliente=ci or None,
                 nombre_cliente=nombre or 'Consumidor Final',
                 apellido_cliente=apellido or '',
                 correo_cliente=correo,
