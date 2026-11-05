@@ -270,6 +270,17 @@ class EgresoViewSet(viewsets.ModelViewSet):
             )
         return qs
 
+    @action(detail=False, methods=['get'])
+    def fecha(self, request):
+        fecha_inicio = request.query_params.get('fecha_inicio')
+        fecha_fin = request.query_params.get('fecha_fin')
+        egresos = self.get_queryset()
+        if fecha_inicio:
+            egresos = egresos.filter(fecha_egreso__date__gte=fecha_inicio)
+        if fecha_fin:
+            egresos = egresos.filter(fecha_egreso__date__lte=fecha_fin)
+        return Response(self.get_serializer(egresos, many=True).data)
+
 
 class CierreCajaResumenView(APIView):
     """
